@@ -1,0 +1,26 @@
+digraph G {
+	graph [layout=dot rankdir=TB]
+
+    Session -> Report [color=red, label="Data"]
+    Report -> BaanDevice [color=red, label="bpf"]
+
+    BaanDevice -> WindowsPrinter [label="bpf"]
+    BaanDevice -> WindowsServerPrinter [label="bpf"]
+    BaanDevice -> ttstpconv [label="bpf"]
+    BaanDevice -> ttcmfprint [label="bpf"]
+    BaanDevice -> baanprint_bc [color=red, label="bpf"]
+    ttstpconv -> ASCII
+    ttstpconv -> Postscript
+    ttstpconv -> Word
+    ttcmfprint -> Email
+    WindowsPrinter -> bwprint_exe
+    WindowsServerPrinter -> bwprint_exe
+    bwprint_exe -> Printer
+    baanprint_bc -> bwprint_py:f0 [color=red, label="bpf"]
+    baanprint_bc -> bwprint_py:f1 [color=red, label="bpf"]
+    bwprint_py:f1 -> custom_handler [color=red]
+    bwprint_py:f0 -> bwprint_exe [color=red, style=dotted, label="printer device=pdfcreator"]
+    bwprint_exe -> bwprint_py:f0 [color=red, style=dotted, label="pdf"]
+
+    bwprint_py [shape = record, label = "{ bwprint_py | { <f0> convert | <f1> handle } } "]
+}
