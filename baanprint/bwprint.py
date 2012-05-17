@@ -152,8 +152,7 @@ def get_plugins():
         os.path.join(os.path.dirname(__file__), 'plugins')])
 
     manager.collectPlugins()
-    plugins = [p for p in manager.getAllPlugins()]
-    return plugins
+    return manager.getAllPlugins()
 
 
 class BwDocument(object):

@@ -12,7 +12,9 @@ class TestBwprint(unittest.TestCase):
         plugin_dir = './baanprint/plugins/'
         yapsy_files = len([f for f in os.listdir(plugin_dir)
                           if f.endswith('.yapsy-plugin')])
-        self.assertEqual(len(bwprint.get_plugins()), yapsy_files)
+        plugins = bwprint.get_plugins()
+        self.assertIsInstance(plugins, list)
+        self.assertEqual(len(plugins), yapsy_files)
 
 
 #class TestDocTypeDetection(unittest.TestCase):
