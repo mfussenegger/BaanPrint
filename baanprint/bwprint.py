@@ -4,13 +4,13 @@
 import os
 import shutil
 import logging
-import tempfile
+#import tempfile
 from time import time, sleep
 
 from baanprint import config
 
 from subprocess import check_call as call
-
+from pyPdf import PdfFileWriter, PdfFileReader
 from argh import ArghParser, command
 from yapsy.PluginManager import PluginManager, IPlugin
 
@@ -46,8 +46,33 @@ def convert(inputf, outputf, template=None):
         os.remove(bpf)
 
     pdf = get_pdf_file(token)
-    if pdf:
+
+    if pdf and template:
+        add_template(pdf, template, outputf)
+    elif pdf:
         shutil.move(pdf, outputf)
+
+
+def add_template(pdf, template, outputpath):
+    """Adds the template to every page in pdf
+
+    :param pdf: path to a pdf file
+    :param template: path to a pdf file. First page is used as template
+                     that is added to every page of "pdf"
+    :param outputpath: filename where the resulting pdf is saved.
+    """
+    pdf_input = PdfFileReader(open(pdf, 'rb'))
+    pdf_template = PdfFileReader(open(template, 'rb'))
+    pdf_output = PdfFileWriter()
+
+    template_page = pdf_template.getPage(0)
+
+    for i in range(pdf_input.getNumPages()):
+        page = pdf_input.getPage(i)
+        page.mergePage(template_page)
+        pdf_output.addPage(page)
+
+    pdf_output.write(open(outputpath, 'wb'))
 
 
 def get_pdf_file(token):

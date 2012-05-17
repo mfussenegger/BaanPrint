@@ -17,6 +17,19 @@ class TestBwprint(unittest.TestCase):
 
 #class TestDocTypeDetection(unittest.TestCase):
 #    def test_type_detection(self):
-#        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-#                            'bestellungen.bpf')
+#        path = './tests/purchase_orders.bpf'
 #        self.assertEqual('PurchaseOrder', bwprint.testtype(path))
+
+
+class TestConvert(unittest.TestCase):
+    def test_convert(self):
+        path = './tests/purchase_orders.bpf'
+        bwprint.convert(path, './tests/purchase_orders.pdf')
+        self.assertTrue(os.path.exists('./tests/purchase_orders.pdf'))
+
+    def test_add_template(self):
+        pdf = './tests/purchase_orders.pdf'
+        output = './tests/purchase_orders_w_logo.pdf'
+        template = './tests/template.pdf'
+        bwprint.add_template(pdf, template, output)
+        self.assertTrue(os.path.exists('./tests/purchase_orders_w_logo.pdf'))
