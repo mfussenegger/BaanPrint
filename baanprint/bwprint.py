@@ -112,7 +112,7 @@ def find_pdf_file(token):
 
 
 @command
-def handle(inputf, template=None):
+def handle(inputf):
     """Detects the filetype and calls the appropriate handler.
 
     In order to detect the type all the plugins in the plugins folder are
@@ -120,9 +120,12 @@ def handle(inputf, template=None):
     Once the file type is found the plugins handle() function is called.
 
     :param inputf: path to the bpf file
-    :param template: 1 page pdf file, usage depends on the doctype/plugin called
     """
-    pass
+    doc = BwDocument(inputf)
+    plugins = get_plugins()
+    for p in plugins:
+        if p.plugin_object.matches(doc.pages):
+            p.plugin_object.handle(doc)
 
 
 @command
