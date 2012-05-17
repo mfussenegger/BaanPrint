@@ -175,8 +175,11 @@ class BwDocument(object):
         if not printer:
             printer = self.printer or config.pdf_printer
 
-        _, output = tempfile.mkstemp('.bpf', dir=os.curdir)
-        #output = os.path.join(os.curdir, 'test.bpf')
+        # this line doesn't work as bwprint.exe doesn't accept the bp file.
+        # I have no idea why that is, if you know - please enlighten me.
+        #_, output = tempfile.mkstemp('.bpf', dir=os.curdir)
+
+        output = os.path.join(os.curdir, 'test.bpf')
         token = str(time()).replace('.', '_')
 
         with open(output, 'w', encoding='latin1') as fd:
