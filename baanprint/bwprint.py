@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+import sys
 import os
 import shutil
 import logging
@@ -19,6 +20,9 @@ from yapsy.PluginManager import PluginManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('baanprint')
+
+if sys.platform != 'win32':
+    WindowsError = Exception
 
 
 @command
@@ -85,7 +89,34 @@ def wait_until_file_is_written(filename):
         lastsize = os.path.getsize(filename)
         sleep(0.1)
         if os.path.getsize(filename) == lastsize:
-            break
+            if sys.platform == 'win32':
+                if is_file_unlocked(filename):
+                    break
+            else:
+                break
+
+
+def is_file_unlocked(filename):
+    """returns True if the file is unlocked, otherwise False
+
+    PDFCreator sometimes still has a lock on the file,
+    even if the file size isn't increasing anymore.
+
+    :param filename: path to the file
+    """
+
+    tmpfile = filename + '.tmp'
+    try:
+        shutil.move(filename, tmpfile)
+    except IOError as e:
+        logger.debug(e)
+        return False
+    except WindowsError as e:
+        logger.debug(e)
+        return False
+    else:
+        shutil.move(tmpfile, filename)
+        return True
 
 
 def find_pdf_file(token):
