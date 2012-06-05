@@ -15,21 +15,9 @@ from baanprint import config
 from subprocess import call
 from pyPdf import PdfFileWriter, PdfFileReader
 from argh import ArghParser, command
-from yapsy.PluginManager import PluginManager, IPlugin
+from yapsy.PluginManager import PluginManager
 
 logging.basicConfig(level=logging.INFO)
-
-
-class IBwPlugin(IPlugin):
-    """Interface for the Yapsy plugins"""
-
-    def matches(self, pages):
-        """called in order to detect the document type"""
-        pass
-
-    def handle(self, bwdocument):
-        """called if the document type matched"""
-        pass
 
 
 @command
