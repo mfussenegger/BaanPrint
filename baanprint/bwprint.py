@@ -109,7 +109,7 @@ def find_pdf_file(token):
     # it might take a while until the file is created
     for i in range(20):
         for filename in os.listdir(config.printer_output):
-            if filename.startswith(token):
+            if token in filename:
                 return os.path.join(config.printer_output, filename)
         sleep(0.1)
 
@@ -178,7 +178,7 @@ class BwDocument(object):
                 fp.seek(0)
                 self.creator = None
             else:
-                self.creator = self.creator.replace('%%Creator:', '')
+                self.creator = self.creator.replace('%%Creator:', '').strip()
 
             page = 1
             for index, line in enumerate(fp.readlines()):
@@ -186,7 +186,7 @@ class BwDocument(object):
                     page += 1
                     self.pages[page] = ''
 
-                self.pages[page] += line + os.linesep
+                self.pages[page] += line
 
     def dump(self, printer=None):
         """writes the in-memory bp-file into a temporary file on disk
@@ -209,8 +209,8 @@ class BwDocument(object):
         # I have no idea why that is, if you know - please enlighten me.
         #_, output = tempfile.mkstemp('.bpf', dir=os.curdir)
 
-        output = os.path.join(os.curdir, 'test.bpf')
-        token = str(time()).replace('.', '_')
+        output = os.path.join(os.curdir, '{0}.bpf'.format(time()))
+        token = '{0}_{1}'.format(self.creator, str(time()).replace('.', '_'))
 
         with open(output, 'w', encoding='latin1') as fd:
             fd.write(printer.format(token) + '\n')
