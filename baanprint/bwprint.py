@@ -18,6 +18,7 @@ from argh import ArghParser, command
 from yapsy.PluginManager import PluginManager
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('baanprint')
 
 
 @command
@@ -103,7 +104,7 @@ def find_pdf_file(token):
 
 
 @command
-def handle(inputf):
+def handle(inputf, report, pagelength):
     """Detects the filetype and calls the appropriate handler.
 
     In order to detect the type all the plugins in the plugins folder are
@@ -114,8 +115,12 @@ def handle(inputf):
     """
     doc = BwDocument(inputf)
     plugins = get_plugins()
+    logger.debug('found {0} plugin(s)'.format(len(plugins)))
+    logger.debug('trying to find plugin for {0}'.format(report))
     for p in plugins:
-        if p.plugin_object.matches(doc.pages):
+        logger.debug('trying plugin {0}'.format(p.name))
+        if p.plugin_object.matches(report, doc.pages):
+            logger.debug('plugin {0} matched'.format(p.name))
             p.plugin_object.handle(doc)
 
 
