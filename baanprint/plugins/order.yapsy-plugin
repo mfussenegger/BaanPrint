@@ -1,0 +1,7 @@
+[Core]
+Name = Order Plugin
+Module = order
+
+[Documentation]
+Author = Mathias Fussenegger
+Version = 0.1
