@@ -131,16 +131,6 @@ def handle(inputf):
             p.plugin_object.handle(doc)
 
 
-@command
-def testtype(inputf):
-    doc = BwDocument(inputf)
-    plugins = get_plugins()
-    for p in plugins:
-        if p.plugin_object.matches(doc.pages):
-            print(p.plugin_object.name)
-            return p.plugin_object.name
-
-
 def get_plugins():
     """Returns all yapsy plugins in the plugin directory
 
@@ -222,7 +212,7 @@ class BwDocument(object):
 
 def main():
     p = ArghParser()
-    p.add_commands([convert, handle, testtype])
+    p.add_commands([convert, handle])
     p.dispatch()
 
 
