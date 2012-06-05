@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import os
 import shutil
 import logging
 #import tempfile
 from time import time, sleep
+from io import open
 
 from baanprint import config
 
