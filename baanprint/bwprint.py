@@ -9,7 +9,7 @@ from time import time, sleep
 
 from baanprint import config
 
-from subprocess import check_call as call
+from subprocess import call
 from pyPdf import PdfFileWriter, PdfFileReader
 from argh import ArghParser, command
 from yapsy.PluginManager import PluginManager, IPlugin
