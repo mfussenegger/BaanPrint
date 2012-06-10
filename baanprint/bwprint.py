@@ -24,6 +24,9 @@ logger = logging.getLogger('baanprint')
 if sys.platform != 'win32':
     WindowsError = Exception
 
+if sys.version_info[0] == 3:
+    unicode = str
+
 
 @command
 def convert(inputf, outputf, template=None):
@@ -153,6 +156,7 @@ def handle(inputf, report, pagelength):
         if p.plugin_object.matches(report, doc.pages):
             logger.debug('plugin {0} matched'.format(p.name))
             p.plugin_object.handle(doc)
+    os.remove(inputf)
 
 
 def get_plugins():
@@ -175,34 +179,56 @@ def get_plugins():
 class BwDocument(object):
     """In memory input file"""
 
-    def __init__(self, bpf_path):
+    def __init__(self, bpf_path, page_size=config.default_page_size):
         self.creator = None
         self.doc_type = None
         self.pages = {1: ''}
         self.printer = None
-        self.page_size = config.default_page_size
+        self.page_size = page_size
+
+        # chr(27).. are escape sequences used by bwprint.exe to determine
+        # the fonts used.
+        # in order to define meta data in the report. use font size small
+        # and begin the line with '//+'
+        self.md_linestart = chr(27) + chr(20) + chr(33) + chr(34) + '//+'
+
         self.read_file(bpf_path)
+
+    def _read_creator(self, fp):
+        """reads the creator into self.creator
+
+        The creator is supposed to be in the first line. As the baan print session
+        should have added logname$ into it.
+        """
+
+        self.creator = fp.readline()
+        if not self.creator.startswith('%%Creator'):
+            fp.seek(0)
+            self.creator = None
+        else:
+            self.creator = self.creator.replace('%%Creator:', '').strip()
 
     def read_file(self, bpf_path):
         with open(bpf_path, 'r', encoding='latin1') as fp:
-
-            # The Baan print session should add logname$ into the first line
-            self.creator = fp.readline()
-            if not self.creator.startswith('%%Creator'):
-                fp.seek(0)
-                self.creator = None
-            else:
-                self.creator = self.creator.replace('%%Creator:', '').strip()
+            self._read_creator(fp)
 
             page = 1
-            for index, line in enumerate(fp.readlines()):
-                if index >= self.page_size and index % self.page_size == 0:
-                    page += 1
+            index = 0
+            for line in fp:
+                if page not in self.pages:
                     self.pages[page] = ''
+
+                # Lines starting with //+ may contain metadata used in the plugins
+                # So don't include them for the page splitting
+                if not line.startswith(self.md_linestart):
+                    index += 1
 
                 self.pages[page] += line
 
-    def dump(self, printer=None):
+                if index % self.page_size == 0:
+                    page += 1
+
+    def dump(self, printer=None, include_md_lines=False):
         """writes the in-memory bp-file into a temporary file on disk
 
         :param printer: printer line that is added in the first line of the file.
@@ -227,9 +253,17 @@ class BwDocument(object):
         token = '{0}_{1}'.format(self.creator, str(time()).replace('.', '_'))
 
         with open(output, 'w', encoding='latin1') as fd:
-            fd.write(printer.format(token) + '\n')
+            fd.write(unicode(printer.format(token)) + '\n')
             for page in self.pages:
-                fd.writelines(self.pages[page])
+                index = 0
+                for line in self.pages[page].split('\n'):
+                    # see read_file() for info on self.md_linestart
+                    if not line.startswith(self.md_linestart) or include_md_lines:
+                        index += 1
+                        if index <= self.page_size:
+                            fd.write(line + '\n')
+                        else:
+                            fd.write(line)
 
         return output, token
 
