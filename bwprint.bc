@@ -1,0 +1,92 @@
+#define PYTHON_PATH     "c:\Python27\python.exe"
+#define BAANPRINT_DIR   "c:\path\to\baanprint\"
+
+
+#include <bic_desktop>
+                                                                                
+function main()
+{
+    string file.bpf(1024)
+    string file.pdf(1024)
+    string local.path(1024)
+    string arg3(4096)
+    string report(100)
+    long rc
+
+    arg3 = trim$(argv$(3))
+    report = spool.report
+
+    file.bpf = get.bpf.file()
+    arg3 = str.replace$(arg3, "{0}", file.bpf)
+
+    if str.startswith(arg3, "handle") then
+        arg3 = str.replace$(arg3, "{1}", report)
+        arg3 = str.replace$(arg3, "{2}", str$(spool.pg.length))
+        rc = run.prog(PYTHON_PATH,
+                      BAANPRINT_DIR & "bin\bwprint.py " & arg3,
+                      RP_NOWAIT,
+                      "",
+                      BAANPRINT_DIR & "bwprint.stdout.log",
+                      BAANPRINT_DIR & "bwprint.err.log")
+
+    else
+        file.pdf = creat.tmp.file$(bse.tmp.dir$())
+        seq.unlink(file.pdf)
+        file.pdf = file.pdf & ".pdf"
+        local.path = strip$("${BSE_TMP}\" & strip$(spool.fileout))
+        arg3 = str.replace$(arg3, "{1}", file.pdf)
+
+        rc = run.prog(PYTHON_PATH,
+                      BAANPRINT_DIR & "bin\bwprint.py " & arg3,
+                      RP_WAIT,
+                      "",
+                      BAANPRINT_DIR & "bwprint.stdout.log",
+                      BAANPRINT_DIR & "bwprint.err.log")
+
+        if rc <> 0 then
+            message("Error %d starting bwprint.py", rc)
+            seq.unlink(file.pdf)
+            exit()
+        endif
+
+        rc = server2client(file.pdf, strip$(local.path), false)
+        if (rc) then
+            message("Error %d copying file to PC (may not have permission)", rc)
+        else
+            rc = start.application.local(local.path, false, rc)
+        endif
+
+        seq.unlink(file.pdf)
+    endif
+
+    | python bwprint will delete file.bpf 
+}
+
+
+function string get.bpf.file()
+{
+    string buffer(4096)
+    string file.bpf(1024)
+    long fp.source
+    long fp.target
+
+    | Add Creator to the bwprint file as it is required
+    | in the python part of baanprint
+
+    file.bpf = creat.tmp.file$(bse.tmp.dir$())
+    seq.unlink(file.bpf)
+    file.bpf = file.bpf & ".bpf"
+    fp.source = seq.open(argv$(1), "r")
+    fp.target = seq.open(file.bpf, "w")
+
+    seq.puts("%%Creator: " & logname$, fp.target)
+    while seq.read(buffer, 4096, fp.source) > 0
+        seq.write(buffer, 4096, fp.target)
+    endwhile
+
+    seq.close(fp.source)
+    seq.close(fp.target)
+    seq.unlink(argv$(1))
+
+    return(file.bpf)
+}
