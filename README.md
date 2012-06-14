@@ -99,6 +99,6 @@ And there are also very powerful solutions like [StreamServe][streamserve].
 
 [streamserve]: http://www.streamserve.com/
 [baanprinting]: https://github.com/mfussenegger/BaanPrint/raw/master/docs/baanprinting.png
-[baanprinting]: https://github.com/mfussenegger/BaanPrint/raw/master/bwprint.bc
+[bwprintbc]: https://github.com/mfussenegger/BaanPrint/raw/master/bwprint.bc
 [pdfcreator]: http://sourceforge.net/projects/pdfcreator/
 [github]: http://github.com
