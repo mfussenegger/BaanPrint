@@ -1,19 +1,9 @@
 BaanPrint
 =========
 
-### What BaanPrint isn't
+### About BaanPrint
 
-BaanPrint isn't a full-featured reporting system.
-There are already enough existing solutions. For example BIRT or MS Reporting Services both of which
-are integrated into Erp LN.
-
-And there are also very powerful solutions like [StreamServe][streamserve].
-
-### What it is
-
-A very simple output management framework for Infor ERP LN written in python.
-
-It can be used to do two things:
+BaanPrint does exactly two things:
 
 #### 1
 
@@ -22,28 +12,93 @@ Convert a Baan standard report into a PDF. Optionally merging a PDF into every p
 #### 2
 
 Execute a custom python script that processes the report. This can be used for all sorts of things.
-Automatically send purchase orders to suppliers, invoices to customers, archive PDF files, and much more!
+E.g. Automatically send purchase orders to suppliers, invoices to customers, archive PDF files, and much more!
+
+### Motivation
+
+There are different ways to accomplish PDF printing in Erp LN. The main motivation for BaanPrint was to get PDFs that look absolutely identical to reports that are printed using regular Windows printers.
+This is why BaanPrint utilizes bwprint.exe (see architecture overview) to create the PDF file using a virtual PDF printer.
+
+Generating Postscript or RTF files from Baan/Erp LN and then convert these to PDF would result in a loss of the font settings.
+
+
+### Architecture Overview
 
 Here is a little overview how it works:
 
 ![baanprinting.png][baanprinting]
 
-
-### Requirements & Development
-
-BaanPrint is licensed under the MIT license. So everyone is free to use it or develop on it.
-
+### Installation & Requirements
 
 BaanPrint is targeted towards Windows Systems as it utilises bwprint.exe for its PDF conversion functionality.
+Although it is possible to get it working on Linux (using wine for bwprint.exe)
 
-As it is written in Python, Python3 and the libraries mentioned in requirements.txt are required to use it.
-These dependencies can easily be installed using PIP.
+BaanPrint requires either Python 2.7 or Python >=3.2 and some Python modules (listed in requirements.txt).
+I currently recommend to use Python 2.7, as I run into a Bug with the Python3 version of the pyPdf module when generating PDF files with templates merged on top.
+
+Usually you can install Python modules using PIP.
 
     #> pip install -r requirements.txt
 
-To generate the PDF files, a virtual PDF Printer ([PdfCreator][pdfcreator] being recommended) is required.
-The `config.py` file has to be adjusted to point to the appropriate printer.
+But in this case there are two edge cases depending on whether you are using Python 2.7 or Python 3.2
+
+#### Python 2.7
+
+The current Yapsy package in the Python Package Index is for python3. So using
+
+    #> pip install Yapsy 
+
+won't work. Please use
+
+    #> pip install  http://sourceforge.net/projects/yapsy/files/Yapsy-1.9/Yapsy-1.9.tar.gz/download
+
+instead.
+
+#### Python 3.2
+
+BaanPrint requires the pyPdf package that, for Python 3.2, is currently only available in a branch on [Github][github]. You can install that using
+
+    #> pip install git+git://github.com/mfenniak/pyPdf.git@py3
+
+#### Virtual PDF Printer
+
+To generate the PDF files, a virtual PDF Printer ([PdfCreator][pdfcreator] being recommended) is required. The PDF Printer should be installed on the Infor ERP LN system and configured to auto-save the files printed using it.
+
+In addition the `config.py` has to be adjusted for two options:
+
+ * The name of the printer
+ * The location where the printer is auto-saving the PDF files.
+
+#### Erp LN Print Device & Session Script
+
+A development license for ERP LN is required to create a custom 3G session script within ERP LN. This script is included in BaanPrint [bwprint.bc][bwprintbc].
+
+In addition a print device has to be added using the `ttaad3500m000` session.
+
+The 4GL Program parameter should be filled with the name of the session created earlier.
+The argument field has to be filled with either
+
+ * `convert "{0}" "{1"}`
+ * `convert -t "c:\path\to\template.pdf" "{0}" "{1}"
+ * `handle "{0}" {1} {2}
+
+depending on what the print device should do. In case of `convert` the path field should be filled with the file name the PDF is going to have once transfered to the client/user. E.g. `fileout.pdf`.
+
+### Development
+
+BaanPrint is licensed under the MIT license. So everyone is free to use it or develop on it.
+I would currently consider it as "alpha quality software". But it will soon be used in production in a environment with ~70 Erp LN users.
+
+### Alternatives
+
+BaanPrint isn't a full-featured reporting system.
+There are already enough existing solutions. For example BIRT or MS Reporting Services both of which
+are integrated into Erp LN.
+
+And there are also very powerful solutions like [StreamServe][streamserve].
 
 [streamserve]: http://www.streamserve.com/
 [baanprinting]: https://github.com/mfussenegger/BaanPrint/raw/master/docs/baanprinting.png
+[baanprinting]: https://github.com/mfussenegger/BaanPrint/raw/master/bwprint.bc
 [pdfcreator]: http://sourceforge.net/projects/pdfcreator/
+[github]: http://github.com
