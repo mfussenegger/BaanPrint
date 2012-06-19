@@ -18,7 +18,6 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from argh import ArghParser, command
 from yapsy.PluginManager import PluginManager
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('baanprint')
 
 if sys.platform != 'win32':

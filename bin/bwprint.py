@@ -9,4 +9,13 @@ except ImportError:
     sys.path.insert(0, path)
     from baanprint import bwprint
 
-bwprint.main()
+
+import logging
+
+
+def main():
+    logging.basicConfig(level=logging.INFO)
+    bwprint.main()
+
+if __name__ == '__main__':
+    main()
