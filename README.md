@@ -36,6 +36,8 @@ Although it is possible to get it working on Linux (using wine for bwprint.exe)
 BaanPrint requires either Python 2.7 or Python >=3.2 and some Python modules (listed in requirements.txt).
 I currently recommend to use Python 2.7, as I run into a Bug with the Python3 version of the pyPdf module when generating PDF files with templates merged on top.
 
+For instructions on how to install python, please refer to [ŧhis blog post][installinstructions]. Following step 1 and 2 is sufficient to get BaanPrint working.
+
 Usually you can install Python modules using PIP.
 
     #> pip install -r requirements.txt
@@ -102,3 +104,4 @@ And there are also very powerful solutions like [StreamServe][streamserve].
 [bwprintbc]: https://github.com/mfussenegger/BaanPrint/raw/master/bwprint.bc
 [pdfcreator]: http://sourceforge.net/projects/pdfcreator/
 [github]: http://github.com
+[installinstructions]: https://zignar.net/2012/06/17/install-python-on-windows/
