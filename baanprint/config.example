@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-default_page_size = 66
+default_page_size = (66, 132)
 bwprint_exe = ['wine',
                '/home/USER/.wine/drive_c/Program Files/Baan/Baan Windows/bin/bwprint.exe']
 

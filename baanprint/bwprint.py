@@ -28,14 +28,14 @@ if sys.version_info[0] == 3:
 
 
 @command
-def convert(inputf, outputf, template=None):
+def convert(inputf, outputf, page_size=config.default_page_size, template=None):
     """Converts the given file into a pdf
 
     :param inputf: path to the bpf file (generated from baan)
     :param outpuf: path to the pdf file that will be created
     :param template: 1 page pdf file, will be overlayed onto each page
     """
-    doc = BwDocument(inputf)
+    doc = BwDocument(inputf, page_size)
     bpf, token = doc.dump()
 
     args = config.bwprint_exe + ['/p', '/r', bpf]
@@ -137,7 +137,7 @@ def find_pdf_file(token):
 
 
 @command
-def handle(inputf, report, pagelength):
+def handle(inputf, report, page_size=config.default_page_size):
     """Detects the filetype and calls the appropriate handler.
 
     In order to detect the type all the plugins in the plugins folder are
@@ -146,7 +146,7 @@ def handle(inputf, report, pagelength):
 
     :param inputf: path to the bpf file
     """
-    doc = BwDocument(inputf)
+    doc = BwDocument(inputf, page_size)
     plugins = get_plugins()
     logger.debug('found {0} plugin(s)'.format(len(plugins)))
     logger.debug('trying to find plugin for {0}'.format(report))
@@ -178,7 +178,7 @@ def get_plugins():
 class BwDocument(object):
     """In memory input file"""
 
-    def __init__(self, bpf_path, page_size=config.default_page_size):
+    def __init__(self, bpf_path, page_size):
         self.creator = None
         self.doc_type = None
         self.pages = {1: ''}
@@ -224,7 +224,7 @@ class BwDocument(object):
 
                 self.pages[page] += line
 
-                if index % self.page_size == 0:
+                if index % self.page_size[0] == 0:
                     page += 1
 
     def dump(self, printer=None, include_md_lines=False):
@@ -259,7 +259,7 @@ class BwDocument(object):
                     # see read_file() for info on self.md_linestart
                     if not line.startswith(self.md_linestart) or include_md_lines:
                         index += 1
-                        if index <= self.page_size:
+                        if index <= self.page_size[0]:
                             fd.write(line + '\n')
                         else:
                             fd.write(line)

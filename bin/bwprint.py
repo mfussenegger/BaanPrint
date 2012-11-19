@@ -2,6 +2,7 @@
 
 try:
     from baanprint import bwprint
+    assert bwprint  # silence pyflakes
 except ImportError:
     import sys
     import os

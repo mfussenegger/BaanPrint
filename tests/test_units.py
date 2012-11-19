@@ -9,13 +9,13 @@ from io import open
 
 class BwDocumentTest(unittest.TestCase):
     def test_init(self):
-        doc = bw.BwDocument('./tests/bwtest.bpf', 4)
-        self.assertEqual(doc.page_size, 4)
+        doc = bw.BwDocument('./tests/bwtest.bpf', (4, 132))
+        self.assertEqual(doc.page_size, (4, 132))
         self.assertEqual(doc.creator, 'user1')
         self.assertEqual(len(doc.pages), 3)
 
     def test_dump(self):
-        doc = bw.BwDocument('./tests/bwtest.bpf', 4)
+        doc = bw.BwDocument('./tests/bwtest.bpf', (4, 132))
         output, token = doc.dump()
         try:
             with open(output, 'r', encoding='latin1') as fp:
@@ -25,7 +25,7 @@ class BwDocumentTest(unittest.TestCase):
             os.remove(output)
 
     def test_dump_with_md_lines(self):
-        doc = bw.BwDocument('./tests/bwtest2.bpf', 4)
+        doc = bw.BwDocument('./tests/bwtest2.bpf', (4, 132))
         output, token = doc.dump()
         try:
             with open(output, 'r', encoding='latin1') as fp:
