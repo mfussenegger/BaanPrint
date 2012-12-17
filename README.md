@@ -83,8 +83,8 @@ The 4GL Program parameter should be filled with the name of the session created 
 The argument field has to be filled with either
 
  * `convert "{0}" "{1}" {2} {3}`
- * `convert -t "c:\path\to\template.pdf" "{0}" "{1}"
- * `handle "{0}" {1} {2} {3}
+ * `convert -t "c:\path\to\template.pdf" "{0}" "{1}"`
+ * `handle "{0}" {1} {2} {3}`
 
 depending on what the print device should do. In case of `convert` the path field should be filled with the file name the PDF is going to have once transfered to the client/user. E.g. `fileout.pdf`.
 
