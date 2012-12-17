@@ -226,10 +226,7 @@ class BwDocument(object):
                 if page not in self.pages:
                     self.pages[page] = ''
 
-                # Lines starting with //+ may contain metadata used in the plugins
-                # So don't include them for the page splitting
-                if not line.startswith(self.md_linestart):
-                    index += 1
+                index += 1
 
                 self.pages[page] += line
 

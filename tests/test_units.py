@@ -30,6 +30,6 @@ class BwDocumentTest(unittest.TestCase):
         try:
             with open(output, 'r', encoding='latin1') as fp:
                 lines = fp.readlines()
-                self.assertEqual(len(lines), 13)
+                self.assertEqual(len(lines), 16)
         finally:
             os.remove(output)
