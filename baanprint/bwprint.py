@@ -28,14 +28,18 @@ if sys.version_info[0] == 3:
 
 
 @command
-def convert(inputf, outputf, page_size=config.default_page_size, template=None):
+def convert(inputf,
+            outputf,
+            page_height=config.default_page_height,
+            page_width=config.default_page_width,
+            template=None):
     """Converts the given file into a pdf
 
     :param inputf: path to the bpf file (generated from baan)
     :param outpuf: path to the pdf file that will be created
     :param template: 1 page pdf file, will be overlayed onto each page
     """
-    doc = BwDocument(inputf, page_size)
+    doc = BwDocument(inputf, (page_height, page_width))
     bpf, token = doc.dump()
 
     args = config.bwprint_exe + ['/p', '/r', bpf]
@@ -133,11 +137,16 @@ def find_pdf_file(token):
         for filename in os.listdir(config.printer_output):
             if token in filename:
                 return os.path.join(config.printer_output, filename)
+            elif '_stdin_' in filename:
+                return os.path.join(config.printer_output, filename)
         sleep(0.1)
 
 
 @command
-def handle(inputf, report, page_size=config.default_page_size):
+def handle(inputf,
+           report,
+           page_height=config.default_page_height,
+           page_width=config.default_page_width):
     """Detects the filetype and calls the appropriate handler.
 
     In order to detect the type all the plugins in the plugins folder are
@@ -146,7 +155,7 @@ def handle(inputf, report, page_size=config.default_page_size):
 
     :param inputf: path to the bpf file
     """
-    doc = BwDocument(inputf, page_size)
+    doc = BwDocument(inputf, (page_height, page_width))
     plugins = get_plugins()
     logger.debug('found {0} plugin(s)'.format(len(plugins)))
     logger.debug('trying to find plugin for {0}'.format(report))
@@ -183,7 +192,7 @@ class BwDocument(object):
         self.doc_type = None
         self.pages = {1: ''}
         self.printer = None
-        self.page_size = page_size
+        self.height, self.width = self.page_size = page_size
 
         # chr(27).. are escape sequences used by bwprint.exe to determine
         # the fonts used.
@@ -242,7 +251,13 @@ class BwDocument(object):
         """
 
         if not printer:
+            orientation = self.width > config.landscape_threshold and 'L' or 'P'
             printer = self.printer or config.pdf_printer
+            printer = printer.format(self.height,
+                                     '{0}',
+                                     self.width,
+                                     orientation)
+
 
         # this line doesn't work as bwprint.exe doesn't accept the bp file.
         # I have no idea why that is, if you know - please enlighten me.

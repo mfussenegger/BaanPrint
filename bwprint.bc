@@ -22,6 +22,7 @@ function main()
     if str.startswith(arg3, "handle") then
         arg3 = str.replace$(arg3, "{1}", report)
         arg3 = str.replace$(arg3, "{2}", str$(spool.pg.length))
+        arg3 = str.replace$(arg3, "{3}", str$(spool.pg.width))
         rc = run.prog(PYTHON_PATH,
                       BAANPRINT_DIR & "bin\bwprint.py " & arg3,
                       RP_NOWAIT,
@@ -35,6 +36,8 @@ function main()
         file.pdf = file.pdf & ".pdf"
         local.path = strip$("${BSE_TMP}\" & strip$(spool.fileout))
         arg3 = str.replace$(arg3, "{1}", file.pdf)
+        arg3 = str.replace$(arg3, "{2}", str$(spool.pg.length))
+        arg3 = str.replace$(arg3, "{3}", str$(spool.pg.width))
 
         rc = run.prog(PYTHON_PATH,
                       BAANPRINT_DIR & "bin\bwprint.py " & arg3,

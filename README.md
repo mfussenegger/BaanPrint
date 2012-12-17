@@ -34,9 +34,10 @@ BaanPrint is targeted towards Windows Systems as it utilises bwprint.exe for its
 Although it is possible to get it working on Linux (using wine for bwprint.exe)
 
 BaanPrint requires either Python 2.7 or Python >=3.2 and some Python modules (listed in requirements.txt).
-I currently recommend to use Python 2.7, as I run into a Bug with the Python3 version of the pyPdf module when generating PDF files with templates merged on top.
+Currently using Python 2.7 is recommended.
 
-For instructions on how to install python, please refer to [ŧhis blog post][installinstructions]. Following step 1 and 2 is sufficient to get BaanPrint working.
+For instructions on how to install Python, please refer to [this blog post][installinstructions].
+Following step 1 and 2 is sufficient to get BaanPrint working.
 
 Usually you can install Python modules using PIP.
 
@@ -58,18 +59,19 @@ instead.
 
 #### Python 3.2
 
-BaanPrint requires the pyPdf package that, for Python 3.2, is currently only available in a branch on [Github][github]. You can install that using
+BaanPrint requires the pyPdf package.  
+For Python 3.2 it is currently only available in a branch on [Github][github]. You can install that using
 
     #> pip install git+git://github.com/mfenniak/pyPdf.git@py3
 
 #### Virtual PDF Printer
 
-To generate the PDF files, a virtual PDF Printer ([PdfCreator][pdfcreator] being recommended) is required. The PDF Printer should be installed on the Infor ERP LN system and configured to auto-save the files printed using it.
+To generate the PDFs, a virtual PDF Printer ([PdfCreator][pdfcreator] being recommended) is required. The PDF Printer should be installed on the Infor ERP LN system and configured to use auto-save.
 
 In addition the `config.py` has to be adjusted for two options:
 
  * The name of the printer
- * The location where the printer is auto-saving the PDF files.
+ * The location where the printer is auto-saving the PDFs.
 
 #### Erp LN Print Device & Session Script
 
@@ -80,16 +82,15 @@ In addition a print device has to be added using the `ttaad3500m000` session.
 The 4GL Program parameter should be filled with the name of the session created earlier.
 The argument field has to be filled with either
 
- * `convert "{0}" "{1"}`
+ * `convert "{0}" "{1}" {2} {3}`
  * `convert -t "c:\path\to\template.pdf" "{0}" "{1}"
- * `handle "{0}" {1} {2}
+ * `handle "{0}" {1} {2} {3}
 
 depending on what the print device should do. In case of `convert` the path field should be filled with the file name the PDF is going to have once transfered to the client/user. E.g. `fileout.pdf`.
 
 ### Development
 
 BaanPrint is licensed under the MIT license. So everyone is free to use it or develop on it.
-I would currently consider it as "alpha quality software". But it will soon be used in production in a environment with ~70 Erp LN users.
 
 ### Alternatives
 

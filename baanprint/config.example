@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
-default_page_size = (66, 132)
+default_page_height = 66
+default_page_width = 132
+
+# if the width exceeds this value the document will be printed in landscape mode
+# instead of portrait mode.
+landscape_threshold = 132
 bwprint_exe = ['wine',
                '/home/USER/.wine/drive_c/Program Files/Baan/Baan Windows/bin/bwprint.exe']
 
-pdf_printer = '@ -p "Virtual PDF Printer" -c 2 -f 1 -t 9999999 -l 66 -m 4 -L -a 1 -r {0} -w 132 -s 9 -d P -B "PDFCREATOR"@"'
+pdf_printer = '@ -p "Virtual PDF Printer" -c 2 -f 1 -t 9999999 -l {0} -m 4 -L -a 1 -r {1} -w {2} -s 9 -d {3} -B "Virtual PDF Printer"@"'
 printer_output = '/var/spool/cups-pdf/USER/'
 
 # windows settings
